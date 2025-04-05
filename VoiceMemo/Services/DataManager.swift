@@ -12,30 +12,16 @@ import Combine
 class DataManager {
     static let shared = DataManager()
     
-    private let container: NSPersistentContainer
     private var cancellables = Set<AnyCancellable>()
     
+    // 使用CoreDataManager获取容器
+    private var container: NSPersistentContainer {
+        return CoreDataManager.shared.persistentContainer
+    }
+    
     private init() {
-        container = NSPersistentContainer(name: "VoiceMemoData")
-        
-        // 加载数据存储
-        container.loadPersistentStores { (storeDescription, error) in
-            if let error = error as NSError? {
-                // 替换这些错误条件代码为您的实际错误处理
-                /*
-                 典型的错误包括:
-                 * 目标目录不存在
-                 * 外部存储不可用
-                 * 没有权限创建存储位置
-                 * 已经存在但不可访问的存储
-                 */
-                fatalError("加载Core Data存储失败: \(error), \(error.userInfo)")
-            }
-        }
-        
-        // 启用自动合并策略
-        container.viewContext.automaticallyMergesChangesFromParent = true
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        // 初始化完成，现在依赖CoreDataManager
+        print("DataManager初始化完成，使用CoreDataManager的持久化容器")
     }
     
     // 保存录音备忘录

@@ -55,10 +55,17 @@ class APIService {
         
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      (200...299).contains(httpResponse.statusCode) else {
-                    throw APIError.serverError(String(data: data, encoding: .utf8) ?? "服务器错误")
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw APIError.networkError("无法获取HTTP响应")
                 }
+                
+                if !(200...299).contains(httpResponse.statusCode) {
+                    // 尝试解析错误响应
+                    let errorString = String(data: data, encoding: .utf8) ?? "未知服务器错误"
+                    print("API请求失败: \(httpResponse.statusCode), 错误信息: \(errorString)")
+                    throw APIError.serverError(errorString)
+                }
+                
                 return data
             }
             .decode(type: TranscriptionResponse.self, decoder: JSONDecoder())
@@ -98,10 +105,17 @@ class APIService {
         
         return URLSession.shared.dataTaskPublisher(for: request)
             .tryMap { data, response in
-                guard let httpResponse = response as? HTTPURLResponse,
-                      (200...299).contains(httpResponse.statusCode) else {
-                    throw APIError.serverError(String(data: data, encoding: .utf8) ?? "服务器错误")
+                guard let httpResponse = response as? HTTPURLResponse else {
+                    throw APIError.networkError("无法获取HTTP响应")
                 }
+                
+                if !(200...299).contains(httpResponse.statusCode) {
+                    // 尝试解析错误响应
+                    let errorString = String(data: data, encoding: .utf8) ?? "未知服务器错误"
+                    print("API请求失败: \(httpResponse.statusCode), 错误信息: \(errorString)")
+                    throw APIError.serverError(errorString)
+                }
+                
                 return data
             }
             .decode(type: CompletionResponse.self, decoder: JSONDecoder())
@@ -152,4 +166,17 @@ struct CompletionResponse: Decodable {
 
 enum APIError: Error {
     case serverError(String)
+    case networkError(String)
+    case decodingError(String)
+    
+    var localizedDescription: String {
+        switch self {
+        case .serverError(let message):
+            return "服务器错误: \(message)"
+        case .networkError(let message):
+            return "网络连接错误: \(message)"
+        case .decodingError(let message):
+            return "数据解析错误: \(message)"
+        }
+    }
 }
