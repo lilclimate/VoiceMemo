@@ -8,14 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var viewModel = MemoViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            HomeView()
+                .environmentObject(viewModel)
+                .tabItem {
+                    Label("首页", systemImage: "mic")
+                }
+            
+            HistoryView()
+                .environmentObject(viewModel)
+                .tabItem {
+                    Label("历史", systemImage: "clock")
+                }
+            
+            ProfileView()
+                .tabItem {
+                    Label("我的", systemImage: "person")
+                }
         }
-        .padding()
+        .accentColor(.blue)
     }
 }
 
