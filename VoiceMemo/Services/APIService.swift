@@ -29,7 +29,7 @@ class APIService {
         // 添加模型参数
         data.append("--\(boundary)\r\n".data(using: .utf8)!)
         data.append("Content-Disposition: form-data; name=\"model\"\r\n\r\n".data(using: .utf8)!)
-        data.append("whisper-1\r\n".data(using: .utf8)!)
+        data.append("FunAudioLLM/SenseVoiceSmall\r\n".data(using: .utf8)!)
         
         // 添加音频文件
         do {
@@ -93,11 +93,12 @@ class APIService {
         """
         
         let body: [String: Any] = [
-            "model": "gpt-4-vision",
+            "model": "Pro/THUDM/glm-4-9b-chat", // 使用SiliconFlow支持的模型
             "messages": [
                 ["role": "user", "content": prompt]
             ],
-            "max_tokens": 2000
+            "max_tokens": 2000,
+            "temperature": 0.7 // 添加温度参数以控制创造性
         ]
         
         let jsonData = try? JSONSerialization.data(withJSONObject: body)

@@ -45,11 +45,18 @@ class AudioRecorder: NSObject, ObservableObject {
     }
     
     func startRecording() {
-        let audioFilename = getDocumentsDirectory().appendingPathComponent("\(Date().timeIntervalSince1970).m4a")
-        let settings = [
-            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+        // 使用wav格式，这是API支持的格式之一
+        let audioFilename = getDocumentsDirectory().appendingPathComponent("\(Date().timeIntervalSince1970).wav")
+        
+        // 使用线性PCM格式，这是最常见的WAV存储格式
+        let settings: [String: Any] = [
+            AVFormatIDKey: Int(kAudioFormatLinearPCM),
             AVSampleRateKey: 44100,
-            AVNumberOfChannelsKey: 2,
+            AVNumberOfChannelsKey: 1, // 单声道可能更合适处理语音
+            AVLinearPCMBitDepthKey: 16, // 16位深度
+            AVLinearPCMIsFloatKey: false,
+            AVLinearPCMIsBigEndianKey: false,
+            AVLinearPCMIsNonInterleaved: false,
             AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
         ]
         
